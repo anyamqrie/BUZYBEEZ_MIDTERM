@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bee_yellow">#FFC107</color>
+    <color name="bee_amber">#FF9800</color>
+    <color name="bee_dark">#212121</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#757575</color>
+</resources>

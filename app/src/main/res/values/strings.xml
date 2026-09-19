@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Details -->
+    <string name="app_name">Buzy Beez</string>
+    <string name="tagline">Safe • Simple • Local</string>
+    <string name="app_est">Buzy Beez | Est. 2026</string>
+
+    <!-- Navigation & Titles -->
+    <string name="home">Home</string>
+    <string name="swarm">Swarm</string>
+    <string name="chat">Chat</string>
+    <string name="calendar">Calendar</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+
+    <!-- Section Headers -->
+    <string name="popular_services">Popular Services</string>
+    <string name="top_workers_near_you">Top Workers Near You</string>
+    <string name="recommended_workers">Recommended Workers</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="appointments">Appointments</string>
+
+    <!-- Common UI Actions -->
+    <string name="view_all">View all →</string>
+    <string name="view_profile">View Profile</string>
+    <string name="hire">Hire</string>
+    <string name="view">View</string>
+    <string name="log_in">Log In</string>
+    <string name="log_out">Log out</string>
+    <string name="create_account">Create Account</string>
+    <string name="continue_btn">Continue</string>
+
+    <!-- Search Placeholders -->
+    <string name="search_service_or_worker">Search worker or service...</string>
+    <string name="search_services">Search services...</string>
+</resources>
