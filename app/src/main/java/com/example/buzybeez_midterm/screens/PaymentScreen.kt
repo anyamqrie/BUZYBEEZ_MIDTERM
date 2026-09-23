@@ -37,7 +37,7 @@ fun PaymentScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFFDFBF5)
+        color = Color(0xFFFDFBF5) // Soft beige consistency
     ) {
         Column(
             modifier = Modifier
@@ -86,7 +86,13 @@ fun PaymentScreen(
             Button(
                 onClick = {
                     if (worker != null) {
-                        viewModel.bookWorker(worker.helperId, "srv-demo", "Bacolod City", selectedMethod, onPaymentComplete)
+                        viewModel.bookWorker(
+                            worker.helperId, 
+                            "srv-demo", 
+                            viewModel.pendingBookingAddress.ifEmpty { "Bacolod City" }, 
+                            selectedMethod, 
+                            onPaymentComplete
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(64.dp),

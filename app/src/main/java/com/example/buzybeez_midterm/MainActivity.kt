@@ -48,7 +48,7 @@ fun BuzyBeezApp(viewModel: AppViewModel) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     // Define which screens should show the bottom bar
-    val screensWithBottomBar = listOf("home", "categories", "workers", "profile", "worker_verification", "transactions", "settings", "calendar")
+    val screensWithBottomBar = listOf("home", "categories", "workers", "profile", "worker_verification", "transactions", "settings", "calendar", "worker_dashboard", "swarm", "chat")
 
     Scaffold(
         bottomBar = {
@@ -92,7 +92,13 @@ fun BuzyBeezApp(viewModel: AppViewModel) {
             composable("signup") {
                 SignUpScreen(
                     viewModel = viewModel,
-                    onSignUpSuccess = { navController.navigate("email_verification") },
+                    onSignUpSuccess = { role ->
+                        if (role == "worker") {
+                            navController.navigate("worker_verification")
+                        } else {
+                            navController.navigate("email_verification")
+                        }
+                    },
                     onNavigateBack = { 
                         viewModel.clearAuthError()
                         navController.popBackStack() 
@@ -181,8 +187,17 @@ fun BuzyBeezApp(viewModel: AppViewModel) {
             composable("payment") {
                 PaymentScreen(
                     viewModel = viewModel,
-                    onPaymentComplete = { navController.navigate("transactions") },
+                    onPaymentComplete = { navController.navigate("booking_success") },
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("booking_success") {
+                BookingSuccessScreen(
+                    onBackToHome = {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                    }
                 )
             }
             composable("categories") {
@@ -204,6 +219,15 @@ fun BuzyBeezApp(viewModel: AppViewModel) {
             }
             composable("worker_dashboard") {
                 WorkerDashboardScreen(viewModel = viewModel)
+            }
+            composable("swarm") {
+                SwarmScreen(viewModel = viewModel)
+            }
+            composable("chat") {
+                ChatScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }
@@ -230,13 +254,13 @@ fun CustomBottomBar(navController: NavHostController) {
                 icon = Icons.Default.Groups,
                 label = "Swarm",
                 isSelected = currentRoute == "swarm",
-                onClick = { /* TODO */ }
+                onClick = { navController.navigate("swarm") }
             )
             BottomNavItem(
                 icon = Icons.Default.Chat,
                 label = "Chat",
                 isSelected = currentRoute == "chat",
-                onClick = { /* TODO */ }
+                onClick = { navController.navigate("chat") }
             )
             
             // Central Home Button

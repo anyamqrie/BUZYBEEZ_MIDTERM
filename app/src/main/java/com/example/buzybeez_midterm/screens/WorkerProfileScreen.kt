@@ -48,7 +48,7 @@ fun WorkerProfileScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = Color(0xFFFDFBF5) // Soft beige consistency
     ) {
         Column(
             modifier = Modifier
@@ -159,20 +159,15 @@ fun WorkerProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 InfoRow(label = "Base Rate", value = "₱500.00/hr")
-                InfoRow(label = "Payment Method", value = "Cash on Delivery")
+                InfoRow(label = "Payment Method", value = "Choose in next step")
                 InfoRow(label = "Coordinates", value = String.format("%.4f, %.4f", lat, lon))
                 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
                     onClick = {
-                        viewModel.bookWorker(
-                            helperId = worker.helperId,
-                            serviceId = "srv-demo",
-                            address = "$serviceAddress ($lat, $lon)",
-                            paymentMethod = "CASH",
-                            onSuccess = onHireSuccess
-                        )
+                        viewModel.pendingBookingAddress = "$serviceAddress ($lat, $lon)"
+                        onHireSuccess()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,7 +180,7 @@ fun WorkerProfileScreen(
                         CircularProgressIndicator(color = BeeDark, modifier = Modifier.size(24.dp))
                     } else {
                         Text(
-                            text = "Hire Now (Cash Payment)",
+                            text = "Hire Now",
                             style = MaterialTheme.typography.labelLarge,
                             fontSize = 18.sp,
                             color = BeeDark
@@ -248,13 +243,6 @@ fun OSMMap(latitude: Double, longitude: Double, onLocationChanged: (Double, Doub
         </html>
     """.trimIndent()
 
-    class MapInterface {
-        @JavascriptInterface
-        fun onLocationChanged(lat: Double, lon: Double) {
-            onLocationChanged(lat, lon)
-        }
-    }
-
     AndroidView(
         factory = { context ->
             WebView(context).apply {
@@ -274,8 +262,7 @@ fun OSMMap(latitude: Double, longitude: Double, onLocationChanged: (Double, Doub
             }
         },
         update = { webView ->
-            // We don't want to reload the map every time the coordinates change from the outside,
-            // as the map itself is the source of truth for the manual move.
+            // Source of truth remains the map interaction
         },
         modifier = Modifier.fillMaxSize()
     )

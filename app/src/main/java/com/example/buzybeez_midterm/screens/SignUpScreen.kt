@@ -26,7 +26,7 @@ import com.example.buzybeez_midterm.ui.theme.BeeYellow
 @Composable
 fun SignUpScreen(
     viewModel: AppViewModel,
-    onSignUpSuccess: () -> Unit,
+    onSignUpSuccess: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     var firstName by remember { mutableStateOf("") }
@@ -93,7 +93,7 @@ fun SignUpScreen(
             Button(
                 onClick = {
                     viewModel.prepareSignup(firstName, lastName, email, phoneNumber, password, selectedRole)
-                    onSignUpSuccess()
+                    onSignUpSuccess(selectedRole)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

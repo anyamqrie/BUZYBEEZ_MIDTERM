@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +32,7 @@ fun HomeScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = Color(0xFFFDFBF5) // Soft beige consistency
     ) {
         Column(
             modifier = Modifier
@@ -67,7 +68,7 @@ fun HomeScreen(
             SectionHeader(title = "Popular Services", onSeeAll = onViewCategories)
             Spacer(modifier = Modifier.height(16.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                items(services.take(5)) { service ->
+                   items(services.take(5)) { service ->
                     ServiceCard(service.serviceName)
                 }
             }
@@ -121,8 +122,9 @@ fun ServiceCard(name: String) {
     Card(
         modifier = Modifier.size(140.dp, 100.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE0E0E0))
     ) {
         Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.BottomStart) {
             Text(text = name, fontWeight = FontWeight.Bold, color = BeeDark, fontSize = 14.sp)
@@ -135,15 +137,20 @@ fun WorkerCard(name: String, status: String) {
     Card(
         modifier = Modifier.size(160.dp, 180.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE0E0E0))
     ) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Surface(
                 modifier = Modifier.size(60.dp),
                 shape = RoundedCornerShape(16.dp),
                 color = BeeLightGray
-            ) {}
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("🐝", fontSize = 24.sp)
+                }
+            }
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = name, fontWeight = FontWeight.Bold, color = BeeDark, fontSize = 16.sp)
             Text(

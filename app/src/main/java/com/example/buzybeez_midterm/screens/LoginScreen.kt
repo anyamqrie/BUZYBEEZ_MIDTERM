@@ -3,7 +3,9 @@ package com.example.buzybeez_midterm.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -31,6 +33,7 @@ fun LoginScreen(
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var selectedRole by remember { mutableStateOf("customer") } // customer, worker, admin
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -39,7 +42,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 24.dp, vertical = 32.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -63,6 +67,17 @@ fun LoginScreen(
                 color = BeeDark.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Role Selection for Demo
+            Text(text = "LOGIN AS...", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = BeeGray, modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LoginRoleCard("Customer", selectedRole == "customer", Modifier.weight(1f)) { selectedRole = "customer" }
+                LoginRoleCard("Worker", selectedRole == "worker", Modifier.weight(1f)) { selectedRole = "worker" }
+                LoginRoleCard("Admin", selectedRole == "admin", Modifier.weight(1f)) { selectedRole = "admin" }
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
             
@@ -116,8 +131,8 @@ fun LoginScreen(
             // BYPASS LOGIN FOR DEMO
             Button(
                 onClick = { 
-                    // Simulate success immediately for demo
-                    viewModel.login(username, password, onLoginSuccess) 
+                    // Simulate success immediately with the selected role
+                    viewModel.demoLogin(selectedRole) 
                     onLoginSuccess() 
                 },
                 modifier = Modifier
@@ -159,6 +174,21 @@ fun LoginScreen(
                     modifier = Modifier.clickable { onNavigateToSignUp() }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun LoginRoleCard(title: String, isSelected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.height(60.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isSelected) BeeYellow else Color.White),
+        border = if (!isSelected) BorderStroke(1.dp, BeeLightGray) else null
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = title, fontWeight = FontWeight.Bold, color = BeeDark, fontSize = 12.sp)
         }
     }
 }

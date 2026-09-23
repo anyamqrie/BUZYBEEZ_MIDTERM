@@ -9,15 +9,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -107,8 +104,9 @@ fun ProfileScreen(
                                 fontWeight = FontWeight.Bold,
                                 color = BeeDark
                             )
+                            val roleLabel = if (currentUser?.role == "worker") "Worker Bee" else "Client"
                             Text(
-                                text = "Client • @${currentUser?.username ?: "johndoe67"}",
+                                text = "$roleLabel • @${currentUser?.username ?: "johndoe67"}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = BeeGray
                             )
@@ -141,7 +139,11 @@ fun ProfileScreen(
             ProfileMenuOption(title = "Transactions", subtitle = "View your payment and booking history", onClick = onNavigateToTransactions)
             ProfileMenuOption(title = "Settings", subtitle = "Manage your account preferences", onClick = onNavigateToSettings)
             ProfileMenuOption(title = "Edit Profile", subtitle = "Update your personal information")
-            ProfileMenuOption(title = "Be a Worker Bee", subtitle = "Apply to offer services on Buzy Beez", onClick = onNavigateToWorkerVerification)
+            
+            // Only show for Clients (Hide for Workers)
+            if (currentUser?.role != "worker") {
+                ProfileMenuOption(title = "Be a Worker Bee", subtitle = "Apply to offer services on Buzy Beez", onClick = onNavigateToWorkerVerification)
+            }
         }
     }
 }

@@ -54,38 +54,45 @@ fun WorkerVerificationScreen(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFFDFBF5)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (step == 1) {
-                VerificationHeader(onNavigateBack)
-                Spacer(modifier = Modifier.height(32.dp))
-                IdSelectionStep(
-                    idTypes = idTypes,
-                    selectedIds = selectedIds,
-                    onToggleId = { name ->
-                        selectedIds = if (selectedIds.contains(name)) selectedIds - name else selectedIds + name
-                    },
-                    onConfirm = { step = 3 }
-                )
-            } else if (step == 3) {
-                val currentIdName = selectedIdList.getOrNull(currentIdDetailIndex) ?: ""
-                IdDetailsStep(
-                    idName = currentIdName,
-                    onBack = {
-                        if (currentIdDetailIndex > 0) currentIdDetailIndex-- else step = 1
-                    },
-                    onSave = {
-                        if (currentIdDetailIndex < selectedIdList.size - 1) {
-                            currentIdDetailIndex++
-                        } else {
-                            onVerificationComplete()
+        if (step == 3) {
+            DocumentUploadScreen(
+                onBack = { step = 2; if (selectedIdList.isNotEmpty()) currentIdDetailIndex = selectedIdList.size - 1 },
+                onContinue = onVerificationComplete
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (step == 1) {
+                    VerificationHeader(onNavigateBack)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    IdSelectionStep(
+                        idTypes = idTypes,
+                        selectedIds = selectedIds,
+                        onToggleId = { name ->
+                            selectedIds = if (selectedIds.contains(name)) selectedIds - name else selectedIds + name
+                        },
+                        onConfirm = { step = 2 }
+                    )
+                } else if (step == 2) {
+                    val currentIdName = selectedIdList.getOrNull(currentIdDetailIndex) ?: ""
+                    IdDetailsStep(
+                        idName = currentIdName,
+                        onBack = {
+                            if (currentIdDetailIndex > 0) currentIdDetailIndex-- else step = 1
+                        },
+                        onSave = {
+                            if (currentIdDetailIndex < selectedIdList.size - 1) {
+                                currentIdDetailIndex++
+                            } else {
+                                step = 3
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
@@ -192,13 +199,10 @@ fun IdDetailsStep(
     var isScanning by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    // Form states
     var field1 by remember { mutableStateOf("") }
     var field2 by remember { mutableStateOf("") }
     var field3 by remember { mutableStateOf("") }
     var field4 by remember { mutableStateOf("") }
-    var field5 by remember { mutableStateOf("") }
-    var field6 by remember { mutableStateOf("") }
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -216,21 +220,20 @@ fun IdDetailsStep(
         HorizontalDivider(color = BeeLightGray)
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Step Counter and Scan Button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.background(BeeYellow.copy(alpha = 0.2f), RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 4.dp)) {
-                Text(text = "STEP 3", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = Color(0xFF8B4513))
+                Text(text = "STEP 2", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = Color(0xFF8B4513))
             }
 
             TextButton(
                 onClick = {
                     scope.launch {
                         isScanning = true
-                        delay(2000) // Simulate scanning
+                        delay(2000)
                         field1 = "P" + (1000000..9999999).random().toString()
                         field2 = "Manila"
                         field3 = "Anya Santos"
@@ -282,7 +285,6 @@ fun IdDetailsStep(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Dynamic fields based on ID type
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     when (idName) {
                         "Passport" -> {
@@ -305,36 +307,6 @@ fun IdDetailsStep(
                         else -> {
                             DetailField(label = "ID Number", value = field1, onValueChange = { field1 = it }, modifier = Modifier.fillMaxWidth())
                             DetailField(label = "Full Name", value = field3, onValueChange = { field3 = it }, modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text("DOCUMENT UPLOAD", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = BeeGray)
-                Spacer(modifier = Modifier.height(12.dp))
-
-                var clearanceImage by remember { mutableStateOf<String?>(null) }
-
-                Card(
-                    onClick = { clearanceImage = "uploaded_uri" },
-                    modifier = Modifier.fillMaxWidth().height(120.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
-                    border = BorderStroke(1.dp, BeeLightGray)
-                ) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        if (clearanceImage == null) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CloudUpload, null, tint = BeeYellow)
-                                Text("Upload Barangay/NBI Clearance", style = MaterialTheme.typography.bodySmall, color = BeeGray)
-                            }
-                        } else {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF1E8E3E))
-                                Spacer(Modifier.width(8.dp))
-                                Text("Clearance Uploaded", fontWeight = FontWeight.Bold, color = BeeDark)
-                            }
                         }
                     }
                 }

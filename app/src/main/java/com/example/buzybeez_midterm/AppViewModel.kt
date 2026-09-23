@@ -36,14 +36,53 @@ class AppViewModel : ViewModel() {
     private val _selectedWorker = MutableStateFlow<HelperModel?>(null)
     val selectedWorker: StateFlow<HelperModel?> = _selectedWorker
 
+    var pendingBookingAddress: String = ""
+
     private var pendingSignupData: Map<String, String>? = null
 
     init {
+        // Load initial dummy data so the app isn't empty even before network calls finish
+        _bookings.value = getDummyBookings()
         loadHostingerData()
     }
 
+    private fun getDummyBookings() = listOf(
+        BookingModel(
+            bookingId = "bk-001",
+            customerId = "usr-882",
+            helperId = "hlp-demo",
+            serviceId = "srv-demo",
+            serviceAddress = "123 Lacson St, Bacolod City (10.6765, 122.9509)",
+            scheduledStartTime = "2026-09-22 10:00:00",
+            totalFare = 500.0,
+            status = "PENDING",
+            paymentMethod = "GCASH"
+        ),
+        BookingModel(
+            bookingId = "bk-002",
+            customerId = "usr-911",
+            helperId = "hlp-demo",
+            serviceId = "srv-demo",
+            serviceAddress = "Gaisano Mall, Bacolod City (10.6841, 122.9563)",
+            scheduledStartTime = "2026-09-22 14:00:00",
+            totalFare = 350.0,
+            status = "PENDING",
+            paymentMethod = "CASH"
+        )
+    )
+
     fun selectWorker(worker: HelperModel) {
         _selectedWorker.value = worker
+    }
+
+    fun demoLogin(role: String) {
+        _currentUser.value = AuthResponse(
+            status = "success",
+            userId = if (role == "admin") "adm-001" else if (role == "worker") "hlp-demo" else "usr-demo",
+            fullName = if (role == "admin") "Administrator" else if (role == "worker") "Demo Worker" else "Demo Customer",
+            role = role,
+            username = "demo_${role}"
+        )
     }
 
     fun login(identifier: String, password: String, onSuccess: () -> Unit) {
@@ -53,7 +92,7 @@ class AppViewModel : ViewModel() {
             try {
                 // Admin/Demo logic for testing
                 if (identifier == "admin" && password == "admin123") {
-                    _currentUser.value = AuthResponse(status = "success", userId = "adm-001", fullName = "Administrator", role = "admin")
+                    demoLogin("admin")
                     onSuccess()
                     return@launch
                 }
@@ -79,7 +118,7 @@ class AppViewModel : ViewModel() {
                     onSuccess()
                 } else {
                     if (identifier.lowercase().contains("test")) {
-                        _currentUser.value = AuthResponse(status = "success", userId = "usr-demo", fullName = "Demo User", role = "customer")
+                        demoLogin("customer")
                         onSuccess()
                     } else {
                         _authError.value = "Login failed. Check your credentials."
@@ -189,7 +228,10 @@ class AppViewModel : ViewModel() {
 
                 val bookingsResponse = RetrofitClient.api.getBookings()
                 if (bookingsResponse.isSuccessful) {
-                    _bookings.value = bookingsResponse.body() ?: emptyList()
+                    val serverBookings = bookingsResponse.body() ?: emptyList()
+                    if (serverBookings.isNotEmpty()) {
+                        _bookings.value = serverBookings
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -228,8 +270,14 @@ class AppViewModel : ViewModel() {
                     totalFare = 500.0,
                     paymentMethod = paymentMethod
                 )
-                val response = RetrofitClient.api.createBooking(booking)
-                if (response.isSuccessful) {
+                try {
+                    val response = RetrofitClient.api.createBooking(booking)
+                    if (response.isSuccessful) {
+                        loadHostingerData()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
                     loadHostingerData()
                     onSuccess()
                 }
